@@ -12,14 +12,14 @@ describe('Yale to Fale replacement logic', () => {
     }).each(function() {
       // Replace text content but not in URLs or attributes
       const text = $(this).text();
-      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale').replace(/YALE/g, 'FALE');
       if (text !== newText) {
         $(this).replaceWith(newText);
       }
     });
     
     // Process title separately
-    const title = $('title').text().replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+    const title = $('title').text().replace(/Yale/g, 'Fale').replace(/yale/g, 'fale').replace(/YALE/g, 'FALE');
     $('title').text(title);
     
     const modifiedHtml = $.html();
@@ -57,7 +57,7 @@ describe('Yale to Fale replacement logic', () => {
       </head>
       <body>
         <h1>Hello World</h1>
-        <p>This is a test page with no Yale references.</p>
+        <p>This is a test page with no special references.</p>
       </body>
       </html>
     `;
@@ -69,7 +69,7 @@ describe('Yale to Fale replacement logic', () => {
       return this.nodeType === 3;
     }).each(function() {
       const text = $(this).text();
-      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale');
+      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale').replace(/YALE/g, 'FALE');
       if (text !== newText) {
         $(this).replaceWith(newText);
       }
@@ -80,7 +80,7 @@ describe('Yale to Fale replacement logic', () => {
     // Content should remain the same
     expect(modifiedHtml).toContain('<title>Test Page</title>');
     expect(modifiedHtml).toContain('<h1>Hello World</h1>');
-    expect(modifiedHtml).toContain('<p>This is a test page with no Yale references.</p>');
+    expect(modifiedHtml).toContain('<p>This is a test page with no special references.</p>');
   });
 
   test('should handle case-insensitive replacements', () => {
@@ -94,7 +94,7 @@ describe('Yale to Fale replacement logic', () => {
       return this.nodeType === 3;
     }).each(function() {
       const text = $(this).text();
-      const newText = text.replace(/Yale/gi, 'Fale');
+      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale').replace(/YALE/g, 'FALE');
       if (text !== newText) {
         $(this).replaceWith(newText);
       }
@@ -103,5 +103,49 @@ describe('Yale to Fale replacement logic', () => {
     const modifiedHtml = $.html();
     
     expect(modifiedHtml).toContain('FALE University, Fale College, and fale medical school');
+  });
+
+  test('should handle complete HTML document with sample data', () => {
+    const $ = cheerio.load(sampleHtmlWithYale);
+    
+    // Apply the same replacement logic as in the main app
+    $('body *').contents().filter(function() {
+      return this.nodeType === 3; // Text nodes only
+    }).each(function() {
+      // Replace text content but not in URLs or attributes
+      const text = $(this).text();
+      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale').replace(/YALE/g, 'FALE');
+      if (text !== newText) {
+        $(this).replaceWith(newText);
+      }
+    });
+    
+    // Process title separately
+    const title = $('title').text().replace(/Yale/g, 'Fale').replace(/yale/g, 'fale').replace(/YALE/g, 'FALE');
+    $('title').text(title);
+    
+    const modifiedHtml = $.html();
+    
+    // Comprehensive checks
+    expect(modifiedHtml).toContain('Fale University Test Page');
+    expect(modifiedHtml).toContain('Welcome to Fale University');
+    expect(modifiedHtml).toContain('Fale University is a private Ivy League research university in New Haven, Connecticut.');
+    expect(modifiedHtml).toContain('Fale was founded in 1701 as the Collegiate School.');
+    expect(modifiedHtml).toContain('Fale has produced many notable alumni, including:');
+    expect(modifiedHtml).toContain('Fale graduates have also been leaders in many fields');
+    
+    // URLs should remain unchanged
+    expect(modifiedHtml).toContain('https://www.yale.edu/about');
+    expect(modifiedHtml).toContain('https://www.yale.edu/admissions');
+    expect(modifiedHtml).toContain('https://www.yale.edu/images/logo.png');
+    expect(modifiedHtml).toContain('mailto:info@yale.edu');
+    
+    // Link text should be changed
+    expect(modifiedHtml).toContain('>About Fale<');
+    expect(modifiedHtml).toContain('>Fale Admissions<');
+    expect(modifiedHtml).toContain('>Contact Fale<');
+    
+    // Alt attributes should not be changed
+    expect(modifiedHtml).toContain('alt="Yale Logo"');
   });
 });

@@ -105,6 +105,28 @@ describe('Yale to Fale replacement logic', () => {
     expect(modifiedHtml).toContain('FALE University, Fale College, and fale medical school');
   });
 
+  test('should handle YALE to FALE replacement specifically', () => {
+    const yaleHtml = `
+      <p>YALE UNIVERSITY is the best. YALE students are smart. YALE!</p>
+    `;
+    
+    const $ = cheerio.load(yaleHtml);
+    
+    $('body *').contents().filter(function() {
+      return this.nodeType === 3;
+    }).each(function() {
+      const text = $(this).text();
+      const newText = text.replace(/Yale/g, 'Fale').replace(/yale/g, 'fale').replace(/YALE/g, 'FALE');
+      if (text !== newText) {
+        $(this).replaceWith(newText);
+      }
+    });
+    
+    const modifiedHtml = $.html();
+    
+    expect(modifiedHtml).toContain('FALE UNIVERSITY is the best. FALE students are smart. FALE!');
+  });
+
   test('should handle complete HTML document with sample data', () => {
     const $ = cheerio.load(sampleHtmlWithYale);
     
@@ -131,8 +153,10 @@ describe('Yale to Fale replacement logic', () => {
     expect(modifiedHtml).toContain('Welcome to Fale University');
     expect(modifiedHtml).toContain('Fale University is a private Ivy League research university in New Haven, Connecticut.');
     expect(modifiedHtml).toContain('Fale was founded in 1701 as the Collegiate School.');
+    expect(modifiedHtml).toContain('FALE UNIVERSITY offers undergraduate and graduate programs.');
     expect(modifiedHtml).toContain('Fale has produced many notable alumni, including:');
     expect(modifiedHtml).toContain('Fale graduates have also been leaders in many fields');
+    expect(modifiedHtml).toContain('FALE alumni network spans the globe');
     
     // URLs should remain unchanged
     expect(modifiedHtml).toContain('https://www.yale.edu/about');

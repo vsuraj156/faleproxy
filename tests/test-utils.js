@@ -21,11 +21,13 @@ const sampleHtmlWithYale = `
   <main>
     <p>Yale University is a private Ivy League research university in New Haven, Connecticut.</p>
     <p>Yale was founded in 1701 as the Collegiate School.</p>
+    <p>YALE UNIVERSITY offers undergraduate and graduate programs.</p>
     <div class="yale-info">
       <p>Yale has produced many notable alumni, including:</p>
       <ul>
         <li>Five U.S. Presidents</li>
         <li>Yale graduates have also been leaders in many fields</li>
+        <li>YALE alumni network spans the globe</li>
       </ul>
     </div>
     <img src="https://www.yale.edu/images/logo.png" alt="Yale Logo">
